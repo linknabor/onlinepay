@@ -8,8 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 
 
 @SpringBootApplication
-@ComponentScan("com.eshequ.wechatpayccb")
-@MapperScan(basePackages="com.eshequ.wechatpayccb.mapper")
+@ComponentScan("com.eshequ.onlinepay")
+@MapperScan(basePackages="com.eshequ.onlinepay.mapper")
 public class Application {
 	
 	public static void main(String[] args) {

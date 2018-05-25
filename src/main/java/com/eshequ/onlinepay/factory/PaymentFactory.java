@@ -4,15 +4,21 @@
 package com.eshequ.onlinepay.factory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.eshequ.onlinepay.constant.Constants;
-import com.eshequ.onlinepay.service.OnlinepayService;
-import com.eshequ.onlinepay.service.impl.WechatPayServiceImpl;
+import com.eshequ.onlinepay.service.OnlinepayChannel;
+import com.eshequ.onlinepay.service.impl.AllinpayImpl;
+import com.eshequ.onlinepay.service.impl.CcbImpl;
+import com.eshequ.onlinepay.service.impl.SandImpl;
+import com.eshequ.onlinepay.service.impl.SwiftpassImpl;
+import com.eshequ.onlinepay.service.impl.WechatImpl;
 
 /**
  * @author davidhardson
  *
  */
+@Service
 public class PaymentFactory {
 	
 	public PaymentFactory() {
@@ -21,21 +27,28 @@ public class PaymentFactory {
 	}
 
 	@Autowired
-	WechatPayServiceImpl wechatPayServiceImpl;
+	private WechatImpl wechatImpl;
+	@Autowired
+	private SwiftpassImpl swiftpassImpl;
+	@Autowired
+	private SandImpl sandImpl;
+	@Autowired
+	private AllinpayImpl allinpayImpl;
+	@Autowired
+	private CcbImpl ccbImpl;
 	
-	public OnlinepayService getInstance(String platChannel) {
-
-		OnlinepayService onlinepayService = null;
+	
+	public OnlinepayChannel getOnlinepayInstance(String platChannel) {
+		
+		OnlinepayChannel onlinepayChannel = null;
+		
 		if (Constants.WECHATPAY_CCB.equals(platChannel)) {
-			onlinepayService = wechatPayServiceImpl;
-		}else if (Constants.WECHATPAY_TENCENT.equals(platChannel)) {
-			onlinepayService = null;	//TODO
-		}else if (Constants.WECHATPAY_SWIFTPASS.equals(platChannel)) {
-			onlinepayService = null;
+			onlinepayChannel = ccbImpl;
+		}else {
+			//TODO;
 		}
-		return onlinepayService;
-		
-		
-	} 
-
+		return onlinepayChannel;
+	}
+	
+	
 }

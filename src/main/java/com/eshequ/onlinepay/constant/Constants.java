@@ -36,6 +36,8 @@ public class Constants {
 		
 	}
 	
+	public static String CCB_WECHAT_SUCCESS = "success";
+	
 	
 	
 

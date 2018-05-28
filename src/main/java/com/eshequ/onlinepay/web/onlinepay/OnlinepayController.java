@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eshequ.onlinepay.exception.BusinessException;
 import com.eshequ.onlinepay.factory.PaymentFactory;
 import com.eshequ.onlinepay.web.BaseController;
+import com.eshequ.onlinepay.web.dto.PayResponse;
+import com.eshequ.onlinepay.web.vo.Order;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author huym
@@ -36,11 +40,16 @@ public class OnlinepayController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/wechatpay", method = RequestMethod.POST)
-	public String wechatpay(@RequestBody Map<String, Object> map) {
+	public String wechatpay(@RequestBody Map<String, Object> map) throws Exception{
 		
-		String platChannel = (String) map.get("platChannel");
-		paymentFactory.getOnlinepayInstance(platChannel).wechatpay(map);
-		return null;
+		ObjectMapper mapper = new ObjectMapper();
+		String requestJsonStr = mapper.writeValueAsString(map);	//map 转json
+		
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);	//设置map中多余的字段不转换到实体
+		Order order = mapper.readValue(requestJsonStr, Order.class);	//map中的字段比实体多。Order实体只参与支付，其余数据的记录用map中的数据
+
+		PayResponse payResponse = paymentFactory.getOnlinepayInstance(order.getPlatChannel()).wechatpay(order);
+		return mapper.writeValueAsString(payResponse);
         
     }
 	
@@ -120,5 +129,12 @@ public class OnlinepayController extends BaseController {
 		logger.info("provider controller : " + e.getMessage(), e);
 		return e.getMessage();
 	}
+	
+	public static void main(String[] args) {
+		
+		
+	}
+	
+	
 	
 }

@@ -1,6 +1,7 @@
 package com.eshequ.onlinepay.service;
 
-import java.util.Map;
+import com.eshequ.onlinepay.web.dto.PayResponse;
+import com.eshequ.onlinepay.web.vo.Order;
 
 /**
  * 支付接口
@@ -9,16 +10,16 @@ import java.util.Map;
  */
 public interface OnlinepaydService {
 
-	void wechatpay(Map<String, Object> map);
+	PayResponse wechatpay(Order order);
 	
-	void micropay(Map<String, Object> map);
+	PayResponse micropay(Order order);
 	
-	void query(Map<String, Object> map);
+	void query(Order order);
 	
-	void refund(Map<String, Object> map);
+	void refund(Order order);
 
-	void refundQuery(Map<String, Object> map);
+	void refundQuery(Order order);
 	
-	void reverse(Map<String, Object> map);
+	void reverse(Order order);
 	
 }

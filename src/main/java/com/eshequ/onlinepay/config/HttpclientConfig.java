@@ -26,6 +26,9 @@ public class HttpclientConfig {
 	@Value("${http.socketTimeout}")
 	private int socketTimeout;
 	
+//	@Value("${http.readTimeout}")
+//	private int readTimeout;
+	
 //	@Value("${staleConnectionCheckEnabled}")
 //	private boolean staleConnectionCheckEnabled = true;
 	
@@ -55,15 +58,26 @@ public class HttpclientConfig {
 	}
 	
 	@Bean
-	public RequestConfig.Builder getRequestConfigBuilder(){
+	public RequestConfig getRequestConfig() {
 		
 		RequestConfig.Builder builder = RequestConfig.custom();
 		builder.setConnectTimeout(connectTimeout);
-        builder.setConnectionRequestTimeout(connectionRequestTimeout);
-        builder.setSocketTimeout(socketTimeout);
-//		builder.setStaleConnectionCheckEnabled(staleConnectionCheckEnabled);	//deprecated
-        return builder;
+		builder.setConnectionRequestTimeout(connectionRequestTimeout);
+		builder.setSocketTimeout(socketTimeout);
+		return builder.build();
 	}
+	
+//	@Bean
+//	public HttpComponentsClientHttpRequestFactory getHttpRequestFactory(HttpClient httpClient) {
+//
+//		HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);// httpClient连接配置
+//		clientHttpRequestFactory.setBufferRequestBody(false);
+//		clientHttpRequestFactory.setConnectTimeout(connectTimeout);
+//		clientHttpRequestFactory.setConnectionRequestTimeout(connectionRequestTimeout);
+//		clientHttpRequestFactory.setReadTimeout(readTimeout);
+//		return clientHttpRequestFactory;
+//	}
+
 	
 	
 }

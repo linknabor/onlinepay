@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import com.eshequ.onlinepay.exception.AppSysException;
 
 
@@ -57,12 +58,13 @@ public class HttpUtil {
 		
         String httpStr = "";
         HttpPost httpPost = new HttpPost(requestUrl);
-        httpPost.setConfig(requestConfig);
         CloseableHttpResponse response = null;
         
         StringEntity stringEntity = new StringEntity(json, charset);
         stringEntity.setContentType("application/json");
+        
         httpPost.setEntity(stringEntity);
+        httpPost.setConfig(requestConfig);
         httpPost.setHeader("Accept", "application/json");
         try {
 	        response = httpClient.execute(httpPost);

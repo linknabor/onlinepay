@@ -33,7 +33,6 @@ public class CcbImpl extends OnlinepayChannel {
 	@Autowired
 	private HttpUtil httpUtil;
 	
-
 	@Override
 	public PayResponse wechatpay(Order order) {
 		

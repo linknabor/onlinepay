@@ -1,7 +1,7 @@
 package com.eshequ.onlinepay.service;
 
-import com.eshequ.onlinepay.web.dto.PayResponse;
 import com.eshequ.onlinepay.web.vo.Order;
+import com.eshequ.onlinepay.web.vo.PayResponse;
 
 /**
  * 支付接口

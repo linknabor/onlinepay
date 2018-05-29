@@ -1,12 +1,10 @@
 package com.eshequ.onlinepay.service.impl;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
 
 import com.eshequ.onlinepay.service.OnlinepayChannel;
-import com.eshequ.onlinepay.web.dto.PayResponse;
 import com.eshequ.onlinepay.web.vo.Order;
+import com.eshequ.onlinepay.web.vo.PayResponse;
 
 @Service
 public class SwiftpassImpl extends OnlinepayChannel{

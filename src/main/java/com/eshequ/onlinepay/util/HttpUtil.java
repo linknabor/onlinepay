@@ -3,12 +3,22 @@
  */
 package com.eshequ.onlinepay.util;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,31 +64,58 @@ public class HttpUtil {
 	 * @param charset
 	 * @return
 	 */
-	public String doPost(String requestUrl, String json, String charset) {
+	@SuppressWarnings("unchecked")
+	public String doPost(String requestUrl, Object obj, String charset) {
 		
         String httpStr = "";
         HttpPost httpPost = new HttpPost(requestUrl);
-        CloseableHttpResponse response = null;
-        
-        StringEntity stringEntity = new StringEntity(json, charset);
-        stringEntity.setContentType("application/json");
-        
-        httpPost.setEntity(stringEntity);
         httpPost.setConfig(requestConfig);
-        httpPost.setHeader("Accept", "application/json");
+        CloseableHttpResponse response = null;
         try {
-	        response = httpClient.execute(httpPost);
+        
+	        if (obj instanceof HashMap || obj instanceof TreeMap) {//键值形式
+	        	
+	    		httpPost.setEntity(new UrlEncodedFormEntity(assembleRequestParams((Map<String,String>)obj), Charset.forName(charset)));
+	    		
+	    	} else if(obj instanceof String) {//json形式
+	    		
+	    		 StringEntity stringEntity = new StringEntity(obj.toString(),charset);//解决中文乱码问题
+	             stringEntity.setContentType("application/json");
+	             httpPost.setEntity(stringEntity);
+				 httpPost.setHeader("Accept", "application/json");
+				 
+	    	} 
+	    	response = httpClient.execute(httpPost);
 	        HttpEntity entity = response.getEntity();
 	        logger.info("response statusCode "+response.getStatusLine().getStatusCode());
 			httpStr = EntityUtils.toString(entity, charset);
+			
 		} catch (Exception e) {
+			
 			throw new AppSysException(e);
+		
 		}
+        
         return httpStr;
     
 	}
 		
-
+	/**
+	 * 组装http请求参数
+	 * 
+	 * @param params
+	 * @param menthod
+	 * @return
+	 */
+	private List<NameValuePair> assembleRequestParams(Map<String, String> params) {
+		
+		List<NameValuePair> nameValueList = new ArrayList<NameValuePair>(params.size());
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            NameValuePair pair = new BasicNameValuePair(entry.getKey(), entry.getValue().toString());
+            nameValueList.add(pair);
+        }
+		return nameValueList;
+	}
 	
 	
 	/**

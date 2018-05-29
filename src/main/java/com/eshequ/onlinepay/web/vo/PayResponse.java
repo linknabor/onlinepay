@@ -1,4 +1,4 @@
-package com.eshequ.onlinepay.web.dto;
+package com.eshequ.onlinepay.web.vo;
 
 import java.io.Serializable;
 
@@ -16,7 +16,7 @@ public class PayResponse implements Serializable {
 	private String result_code;	//业务返回码
 	private String err_code;	//错误码
 	private String err_code_des;	//错误描述
-	private String pay_url;	//移动端支付链接,建行和威富通用
+	private JsApi jsApi;	//页面支付用集合
 	
 	public String getOut_trade_no() {
 		return out_trade_no;
@@ -60,13 +60,12 @@ public class PayResponse implements Serializable {
 	public void setErr_code_des(String err_code_des) {
 		this.err_code_des = err_code_des;
 	}
-	public String getPay_url() {
-		return pay_url;
+	public JsApi getJsApi() {
+		return jsApi;
 	}
-	public void setPay_url(String pay_url) {
-		this.pay_url = pay_url;
+	public void setJsApi(JsApi jsApi) {
+		this.jsApi = jsApi;
 	}
 	
 	
-
 }

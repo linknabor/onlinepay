@@ -36,9 +36,8 @@ public class Constants {
 		
 	}
 	
-	public static String CCB_WECHAT_SUCCESS = "success";
-	
-	
+	public static String WECHAT_SUCCESS = "SUCCESS";
+	public static String WECHAT_FAIL = "FAIL";
 	
 
 }

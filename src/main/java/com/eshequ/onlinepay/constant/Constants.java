@@ -36,8 +36,14 @@ public class Constants {
 		
 	}
 	
-	public static String WECHAT_SUCCESS = "SUCCESS";
-	public static String WECHAT_FAIL = "FAIL";
+	/*微信支付标准返回值*/
+	public final static String WECHAT_SUCCESS = "SUCCESS";
+	public final static String WECHAT_FAIL = "FAIL";
+	public final static String WECHAT_PAYING = "USERPAYING";
+	public final static String WECHAT_REFUNDING = "REFUND";
+	public final static String WECHAT_PROCESSING = "PROCESSING";
+	public final static String WECHAT_NOTSURE = "NOTSURE";
+	public final static String WECHAT_CHANGE = "CHANGE";
 	
 
 }

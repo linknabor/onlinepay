@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.eshequ.onlinepay.service.vo;
+package com.eshequ.onlinepay.service.vo.ccb;
 
 import java.io.Serializable;
 

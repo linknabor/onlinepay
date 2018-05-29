@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.eshequ.onlinepay.exception.AppSysException;
+import com.eshequ.onlinepay.exception.BusinessException;
 
 
 /**
@@ -79,12 +80,21 @@ public class HttpUtil {
 	    		
 	    	} else if(obj instanceof String) {//json形式
 	    		
-	    		 StringEntity stringEntity = new StringEntity(obj.toString(),charset);//解决中文乱码问题
-	             stringEntity.setContentType("application/json");
-	             httpPost.setEntity(stringEntity);
-				 httpPost.setHeader("Accept", "application/json");
+	    		if (((String) obj).startsWith("<") && (((String) obj).endsWith(">"))) {	//xml
+	    			StringEntity stringEntity = new StringEntity(obj.toString(), charset);//解决中文乱码问题
+        			stringEntity.setContentType("text/xml");
+        			httpPost.setEntity(stringEntity);
+				}else {
+					StringEntity stringEntity = new StringEntity(obj.toString(),charset);//解决中文乱码问题
+		             stringEntity.setContentType("application/json");
+		             httpPost.setEntity(stringEntity);
+					
+				}
 				 
-	    	} 
+	    	} else {
+				throw new BusinessException("invalid post object ! ");
+			} 
+	        httpPost.setHeader("Accept", "application/json");
 	    	response = httpClient.execute(httpPost);
 	        HttpEntity entity = response.getEntity();
 	        logger.info("response statusCode "+response.getStatusLine().getStatusCode());

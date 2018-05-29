@@ -70,12 +70,19 @@ public class OnlinepayController extends BaseController {
 	 * 支付交易查询
 	 * @param map
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(value = "/query", method = RequestMethod.POST)
-	public String queryPay(@RequestBody Map<String, Object> map) {
+	public String queryPay(@RequestBody Map<String, Object> map) throws Exception {
 		
-		System.out.println(map.toString());
-        return "test RESTful";
+		ObjectMapper mapper = new ObjectMapper();
+		String requestJsonStr = mapper.writeValueAsString(map);	//map 转json
+		
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);	//设置map中多余的字段不转换到实体
+		Order order = mapper.readValue(requestJsonStr, Order.class);	//map中的字段比实体多。Order实体只参与支付，其余数据的记录用map中的数据
+
+		paymentFactory.getOnlinepayInstance(order.getPlatChannel()).query(order);
+		return null;
         
     }
 	

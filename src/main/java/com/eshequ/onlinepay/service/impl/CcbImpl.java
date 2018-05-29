@@ -1,5 +1,8 @@
 package com.eshequ.onlinepay.service.impl;
 
+import static org.junit.Assert.assertFalse;
+
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,24 +13,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.eshequ.onlinepay.constant.CcbConstants;
+import com.eshequ.onlinepay.constant.CcbConstants.RespCode;
 import com.eshequ.onlinepay.constant.Constants;
+import com.eshequ.onlinepay.exception.AppSysException;
 import com.eshequ.onlinepay.exception.BusinessException;
 import com.eshequ.onlinepay.service.OnlinepayChannel;
-import com.eshequ.onlinepay.service.vo.CcbWechatPayResponse;
+import com.eshequ.onlinepay.service.vo.ccb.CcbPayQueryResponse;
+import com.eshequ.onlinepay.service.vo.ccb.CcbReqBody;
+import com.eshequ.onlinepay.service.vo.ccb.CcbRequest;
+import com.eshequ.onlinepay.service.vo.ccb.CcbRespBody;
+import com.eshequ.onlinepay.service.vo.ccb.CcbWechatPayResponse;
+import com.eshequ.onlinepay.service.vo.ccb.QueryReq;
+import com.eshequ.onlinepay.service.vo.ccb.QueryResp;
+import com.eshequ.onlinepay.service.vo.ccb.QueryRespDetail;
 import com.eshequ.onlinepay.util.HttpUtil;
 import com.eshequ.onlinepay.util.MD5Util;
 import com.eshequ.onlinepay.web.vo.JsApi;
 import com.eshequ.onlinepay.web.vo.MchInfo;
 import com.eshequ.onlinepay.web.vo.Order;
 import com.eshequ.onlinepay.web.vo.PayResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 @Service
 public class CcbImpl extends OnlinepayChannel {
 	
 	private static Logger logger = LoggerFactory.getLogger(OnlinepayChannel.class);
-	
-	private static final String CCB_DEFAULT_CHARSET = "UTF-8";
 	
 	@Autowired
 	private HttpUtil httpUtil;
@@ -37,7 +51,7 @@ public class CcbImpl extends OnlinepayChannel {
 		
 		Map<String, String> requestMap = createOrderRequest(order);
 		String requestUrl = "https://ibsbjstar.ccb.com.cn/CCBIS/ccbMain";	//TODO	Get from db;
-		String resposne = httpUtil.doPost(requestUrl, requestMap, CCB_DEFAULT_CHARSET);
+		String resposne = httpUtil.doPost(requestUrl, requestMap, CcbConstants.CCB_DEFAULT_CHARSET);
 		logger.info("response is : " + resposne);
 		PayResponse payResponse = formatResponse(resposne);
 		return payResponse;
@@ -131,10 +145,10 @@ public class CcbImpl extends OnlinepayChannel {
 	 * @param secret
 	 * @return
 	 */
-	public String createSign(Map<String, String> map, String secret, String charset){
+	private String createSign(Map<String, String> map, String secret, String charset){
 		
 		if (StringUtils.isEmpty(charset)) {
-			charset = CCB_DEFAULT_CHARSET;
+			charset = CcbConstants.CCB_DEFAULT_CHARSET;
 		}
 		
 		Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
@@ -163,8 +177,141 @@ public class CcbImpl extends OnlinepayChannel {
 
 	@Override
 	public void query(Order order) {
-		// TODO Auto-generated method stub
 		
+		String transactionId = order.getTransactionId();	//交易号
+		MchInfo mchInfo = order.getMchInfo();	//商户信息
+		assertFalse("transactionId不能为空", StringUtils.isEmpty(transactionId));
+		assertFalse("商户信息不能为空", mchInfo == null);
+		logger.info("mchInfo is : " + mchInfo.toString());
+		
+		String requestXml = createQueryRequest(transactionId, mchInfo);
+		String requestUrl = "http://localhost:12345/";	//TODO
+		String response = httpUtil.doPost(requestUrl, requestXml, CcbConstants.CCB_DEFAULT_CHARSET);
+		System.out.println(response);
+		CcbPayQueryResponse ccbPayQueryResponse = formatQueryResponse(response);
+		
+	}
+
+	/**
+	 * 创建查询请求，XML格式
+	 * @param transactionId
+	 * @param mchInfo
+	 * @return
+	 */
+	private String createQueryRequest(String transactionId, MchInfo mchInfo) {
+		
+		CcbReqBody<QueryReq> reqBody = initializeReqBodyCommon(CcbConstants.TX_CODE_FUND_QUERY, mchInfo);
+		QueryReq reqDetail = new QueryReq();
+		reqDetail.setKind("0");	//0:未结流水,1:已结流水
+		reqDetail.setOrder(transactionId);	//不是orderId,不要弄错
+		reqDetail.setDexcel("1");	//默认为“1”，1:不压缩,2.压缩成zip文件
+		reqDetail.setNorderby("2");	//1:交易日期,2:订单号
+		reqDetail.setStatus("3");	//0:交易失败,1:交易成功,2:待银行确认(针对未结流水查询);3:全部
+		reqBody.setTx_info(reqDetail);
+		
+		/*请求的bean转xml */
+		CcbRequest<QueryReq> request = new CcbRequest<QueryReq>(reqBody);
+		ObjectMapper mapper = new ObjectMapper();
+		String requestXml = "";
+		try {
+			String requestJsonStr = mapper.writeValueAsString(request);
+			ObjectMapper objectMapper = new ObjectMapper();
+			JsonNode root = objectMapper.readTree(requestJsonStr);
+			XmlMapper xmlMapper = new XmlMapper();
+			requestXml = xmlMapper.writer().withoutRootName().writeValueAsString(root);
+			requestXml = CcbConstants.REQ_XML_HEAD.concat(requestXml);
+			logger.info("request xml is : " + requestXml);
+			
+		} catch (Exception e) {
+			throw new AppSysException(e);
+		}
+		return requestXml;
+		
+	}
+	
+	private CcbPayQueryResponse formatQueryResponse(String responseStr) {
+		
+		assertFalse("返回结果为空。", StringUtils.isEmpty(responseStr));
+		
+		try {
+			XmlMapper xmlMapper = new XmlMapper();
+			@SuppressWarnings("unchecked")
+			CcbRespBody<QueryResp> ccbResp = xmlMapper.readValue(responseStr, CcbRespBody.class);
+			String return_code = ccbResp.getReturn_code();	//请求成功或失败
+			String return_msg = ccbResp.getReturn_msg();
+			
+			String result_code = "";
+			String err_code = "";
+			String err_code_des = "";
+			String trade_state = "";
+			
+			CcbPayQueryResponse ccbPayQueryResponse = new CcbPayQueryResponse();
+			if (RespCode.SUCCESS.equals(return_code)) {
+				
+				QueryResp queryResp = ccbResp.getTx_info();
+				QueryRespDetail detail = queryResp.getList();
+				String transactionId = detail.getOrder();
+				String tranAmt = detail.getPayment_money();
+				String orderStatus = detail.getOrder_status();	//订单状态
+				
+				result_code = Constants.WECHAT_SUCCESS;
+				
+				if (CcbConstants.CCB_ORDER_SUCCESS.equals(orderStatus)) {
+					trade_state = Constants.WECHAT_SUCCESS;
+				}else if (CcbConstants.CCB_ORDER_NOT_COMFIRMED.equals(orderStatus)||CcbConstants.CCB_ORDER_NOT_COMFIRMED2.equals(orderStatus)) {
+					trade_state = Constants.WECHAT_PAYING;
+				}else {
+					trade_state = Constants.WECHAT_FAIL;
+				}
+				
+				ccbPayQueryResponse.setTrade_state(trade_state);
+				ccbPayQueryResponse.setTrade_stat_desc(trade_state);
+				ccbPayQueryResponse.setTotal_fee(tranAmt);
+				ccbPayQueryResponse.setOther_payId(transactionId);
+				ccbPayQueryResponse.setTransaction_id(transactionId);
+				ccbPayQueryResponse.setResult_code(result_code);
+				ccbPayQueryResponse.setReturn_code(Constants.WECHAT_SUCCESS);
+				ccbPayQueryResponse.setReturn_msg(return_msg);
+				
+			}else {
+				
+				err_code = return_code;	//错误代码
+				err_code_des = return_msg;
+				if (StringUtils.isEmpty(err_code_des)) {
+					err_code_des = ccbResp.getTx_info().getNotice();
+				}
+				ccbPayQueryResponse.setResult_code(err_code);
+				ccbPayQueryResponse.setReturn_code(err_code);
+				ccbPayQueryResponse.setReturn_msg(err_code_des);
+			
+			}
+			return ccbPayQueryResponse;
+			
+		} catch (Exception e) {
+			
+			throw new AppSysException(e);
+			
+		}
+		
+	}
+	
+	/**
+	 * 组建报文头（各报文通用）
+	 * @param mchInfo
+	 * @return
+	 */
+	private <T> CcbReqBody<T> initializeReqBodyCommon(String requestType, MchInfo mchInfo){
+		
+		CcbReqBody<T> reqBody = new CcbReqBody<T>();
+		reqBody.setCust_id(mchInfo.getMch_id());
+		reqBody.setLanguage(CcbConstants.CCB_DEFAULT_LANGUAGE);	//写死
+		reqBody.setPassword(mchInfo.getSecret());
+		reqBody.setRequest_sn("");	//16位数字	TODO
+		reqBody.setTx_code(requestType);
+		reqBody.setUser_id("");	//TODO 
+		
+		return reqBody;
+	
 	}
 
 	@Override
@@ -187,17 +334,22 @@ public class CcbImpl extends OnlinepayChannel {
 	
 	public static void main(String[] args) {
 		
-//		Map<String, String>map = new LinkedHashMap<String, String>();
-//		map.put("first", "1");
-//		map.put("third", "3");
-//		map.put("second", "2");
-//		System.out.println(map.toString());
-//		String sign = createSign(map, "2222", "UTF-8");
-//		System.out.println(sign);
-		
-		String str = "MERCHANTID=105584073990033&BRANCHID=442000000&POSID=100000415&ORDERID=105584073990033180529115415930&PAYMENT=0.01&CURCODE=01&TXCODE=530550&REMARK1=测试物业缴费&RETURNTYPE=3&PUB=bd0f9a0658b5640c37378787020111";
-		String sign = MD5Util.MD5Encode(str, "utf-8");
-		System.out.println(sign);
+		try {
+			String jsonStr = "{\"tx\":{\"request_sn\":\"\",\"cust_id\":\"105584073990033\",\"user_id\":\"\",\"password\":\"bd0f9a0658b5640c37378787020111\",\"tx_code\":\"5W1002\",\"language\":\"CN\",\"tx_info\":{\"start\":null,\"starthour\":null,\"startmin\":null,\"end\":null,\"endhour\":null,\"endmin\":null,\"kind\":\"0\",\"order\":\"105584073990033180529164058975\",\"account\":null,\"dexcel\":\"1\",\"money\":null,\"norderby\":\"2\",\"page\":null,\"pos_code\":null,\"status\":\"3\"}}}";
+			ObjectMapper objectMapper = new ObjectMapper();
+			JsonNode root = objectMapper.readTree(jsonStr);
+			XmlMapper xmlMapper = new XmlMapper();
+			String xml = xmlMapper.writer().withRootName("xml").writeValueAsString(root);
+			System.out.println(xml);
+			
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		
 	}
 	

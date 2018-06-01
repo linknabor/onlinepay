@@ -5,6 +5,8 @@ package com.eshequ.onlinepay.service.vo.ccb;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * @author davidhardson
  * @param <T>
@@ -24,11 +26,17 @@ public class CcbRespBody<T> implements Serializable {
 //	5 RETURN_MSG 响应信息 varChar(99) T 交易响应信息 
 //	7 LANGUAGE 语言 varChar(2) F CN，同请求报文 
 
+	@JsonProperty("REQUEST_SN")
 	private String request_sn;
+	@JsonProperty("CUST_ID")
 	private String cust_id;
+	@JsonProperty("TX_CODE")
 	private String tx_code;
+	@JsonProperty("RETURN_CODE")
 	private String return_code;
+	@JsonProperty("RETURN_MSG")
 	private String return_msg;
+	@JsonProperty("LANGUAGE")
 	private String language;
 	
 	private T tx_info;

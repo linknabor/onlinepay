@@ -10,21 +10,24 @@ import java.util.Map;
  */
 public class CcbConstants {
 
-	public static final String CCB_DEFAULT_CHARSET = "UTF-8";
-	public static final String CCB_DEFAULT_LANGUAGE = "CN";
-	public static final String CCB_XML_ENCODING = "GB2312";
+	public static final String DEFAULT_CHARSET = "UTF-8";
+	public static final String DEFAULT_LANGUAGE = "CN";
+	public static final String XML_ENCODING = "GB2312";
 	public static Map<String, String> respCodeMap;
 
 	public static final String TX_CODE_FUND_QUERY = "5W1002";	//支付流水查询
 	public static final String TX_CODE_REFUND_QUERY = "5W1003";	//退款流水查询
 	public static final String TX_CODE_REFUND = "5W1004";
 	
-	public static final String CCB_ORDER_FAILED = "0";	//0:失败,1:成功,2:待银行确认,3:已部分退款,4:已全额退款,5:待银行确认
-	public static final String CCB_ORDER_SUCCESS = "1";
-	public static final String CCB_ORDER_NOT_COMFIRMED = "2";	
-	public static final String CCB_ORDER_PART_REFUNDED = "3";
-	public static final String CCB_ORDER_REFUNDED = "4";
-	public static final String CCB_ORDER_NOT_COMFIRMED2 = "2";
+	public static final String ORDER_FAILED = "0";	//0:失败,1:成功,2:待银行确认,3:已部分退款,4:已全额退款,5:待银行确认
+	public static final String ORDER_SUCCESS = "1";
+	public static final String ORDER_NOT_COMFIRMED = "2";	
+	public static final String ORDER_PART_REFUNDED = "3";
+	public static final String ORDER_REFUNDED = "4";
+	public static final String ORDER_NOT_COMFIRMED2 = "2";
+
+	public static final String USER_ID = "105290000032725-123";	//客户端操作员号	TODO 写配置文件或者数据库
+	public static final String USER_PASSWD = "258258";	//操作员密码
 	
 	public static final String REQ_XML_HEAD = "<?xml version=\"1.0\" encoding=\"GB2312\" standalone=\"yes\" ?>";
 	

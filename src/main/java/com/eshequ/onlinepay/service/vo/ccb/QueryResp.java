@@ -1,6 +1,9 @@
 package com.eshequ.onlinepay.service.vo.ccb;
 
 import java.io.Serializable;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QueryResp implements Serializable {
 
@@ -15,15 +18,19 @@ public class QueryResp implements Serializable {
 //	List（多条信息） 
 //	List End
 	
+	@JsonProperty("CUR_PAGE")
 	private String cur_page;
+	@JsonProperty("PAGE_COUNT")
 	private String page_count;
+	@JsonProperty("NOTICE")
 	private String notice;
 	
 	/*
 	 * /QueryRespDetail理论上应该定义成List<QueryRespDetail>，但由于XMLSerializer这个工具类的BUG，在LIST只有一个元素的时候，
 	 * 会将LIST转换成其对应的泛型类型，因此这里不再定义成LIST。
 	 */
-	private QueryRespDetail list;
+	@JsonProperty("LIST")
+	private List<QueryRespDetail> list;
 
 	public String getCur_page() {
 		return cur_page;
@@ -49,11 +56,11 @@ public class QueryResp implements Serializable {
 		this.notice = notice;
 	}
 
-	public QueryRespDetail getList() {
+	public List<QueryRespDetail> getList() {
 		return list;
 	}
 
-	public void setList(QueryRespDetail list) {
+	public void setList(List<QueryRespDetail> list) {
 		this.list = list;
 	}
 

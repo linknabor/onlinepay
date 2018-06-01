@@ -3,8 +3,10 @@ package com.eshequ.onlinepay.service.impl;
 import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -18,6 +20,8 @@ import com.eshequ.onlinepay.constant.CcbConstants.RespCode;
 import com.eshequ.onlinepay.constant.Constants;
 import com.eshequ.onlinepay.exception.AppSysException;
 import com.eshequ.onlinepay.exception.BusinessException;
+import com.eshequ.onlinepay.http.HttpClientProxy;
+import com.eshequ.onlinepay.http.HttpConfig;
 import com.eshequ.onlinepay.service.OnlinepayChannel;
 import com.eshequ.onlinepay.service.vo.ccb.CcbPayQueryResponse;
 import com.eshequ.onlinepay.service.vo.ccb.CcbReqBody;
@@ -27,12 +31,13 @@ import com.eshequ.onlinepay.service.vo.ccb.CcbWechatPayResponse;
 import com.eshequ.onlinepay.service.vo.ccb.QueryReq;
 import com.eshequ.onlinepay.service.vo.ccb.QueryResp;
 import com.eshequ.onlinepay.service.vo.ccb.QueryRespDetail;
-import com.eshequ.onlinepay.util.HttpUtil;
+import com.eshequ.onlinepay.util.DateUtil;
 import com.eshequ.onlinepay.util.MD5Util;
 import com.eshequ.onlinepay.web.vo.JsApi;
 import com.eshequ.onlinepay.web.vo.MchInfo;
 import com.eshequ.onlinepay.web.vo.Order;
 import com.eshequ.onlinepay.web.vo.PayResponse;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,14 +49,14 @@ public class CcbImpl extends OnlinepayChannel {
 	private static Logger logger = LoggerFactory.getLogger(OnlinepayChannel.class);
 	
 	@Autowired
-	private HttpUtil httpUtil;
+	private HttpClientProxy httpClientProxy;
 	
 	@Override
 	public PayResponse wechatpay(Order order) {
 		
 		Map<String, String> requestMap = createOrderRequest(order);
 		String requestUrl = "https://ibsbjstar.ccb.com.cn/CCBIS/ccbMain";	//TODO	Get from db;
-		String resposne = httpUtil.doPost(requestUrl, requestMap, CcbConstants.CCB_DEFAULT_CHARSET);
+		String resposne = httpClientProxy.doPost(requestUrl, requestMap, CcbConstants.DEFAULT_CHARSET);
 		logger.info("response is : " + resposne);
 		PayResponse payResponse = formatResponse(resposne);
 		return payResponse;
@@ -148,7 +153,7 @@ public class CcbImpl extends OnlinepayChannel {
 	private String createSign(Map<String, String> map, String secret, String charset){
 		
 		if (StringUtils.isEmpty(charset)) {
-			charset = CcbConstants.CCB_DEFAULT_CHARSET;
+			charset = CcbConstants.DEFAULT_CHARSET;
 		}
 		
 		Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
@@ -185,8 +190,11 @@ public class CcbImpl extends OnlinepayChannel {
 		logger.info("mchInfo is : " + mchInfo.toString());
 		
 		String requestXml = createQueryRequest(transactionId, mchInfo);
+		Map<String, String> requestMap = new HashMap<String, String>();
+		requestMap.put("requestXml", requestXml);
 		String requestUrl = "http://localhost:12345/";	//TODO
-		String response = httpUtil.doPost(requestUrl, requestXml, CcbConstants.CCB_DEFAULT_CHARSET);
+		HttpConfig httpConfig = new HttpConfig(CcbConstants.DEFAULT_CHARSET, CcbConstants.XML_ENCODING);
+		String response = httpClientProxy.doPost(requestUrl, requestMap, httpConfig);
 		System.out.println(response);
 		CcbPayQueryResponse ccbPayQueryResponse = formatQueryResponse(response);
 		
@@ -212,13 +220,16 @@ public class CcbImpl extends OnlinepayChannel {
 		/*请求的bean转xml */
 		CcbRequest<QueryReq> request = new CcbRequest<QueryReq>(reqBody);
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(Include.NON_NULL);//空字段不序列化
 		String requestXml = "";
 		try {
 			String requestJsonStr = mapper.writeValueAsString(request);
 			ObjectMapper objectMapper = new ObjectMapper();
 			JsonNode root = objectMapper.readTree(requestJsonStr);
 			XmlMapper xmlMapper = new XmlMapper();
+			xmlMapper.setSerializationInclusion(Include.NON_NULL);
 			requestXml = xmlMapper.writer().withoutRootName().writeValueAsString(root);
+			requestXml = requestXml.replace("<>", "").replace("</>", "");	//去除empty root
 			requestXml = CcbConstants.REQ_XML_HEAD.concat(requestXml);
 			logger.info("request xml is : " + requestXml);
 			
@@ -249,16 +260,16 @@ public class CcbImpl extends OnlinepayChannel {
 			if (RespCode.SUCCESS.equals(return_code)) {
 				
 				QueryResp queryResp = ccbResp.getTx_info();
-				QueryRespDetail detail = queryResp.getList();
-				String transactionId = detail.getOrder();
-				String tranAmt = detail.getPayment_money();
-				String orderStatus = detail.getOrder_status();	//订单状态
+				List<QueryRespDetail> list = queryResp.getList();
+				String transactionId = list.get(0).getOrder();
+				String tranAmt = list.get(0).getPayment_money();
+				String orderStatus = list.get(0).getOrder_status();	//订单状态
 				
 				result_code = Constants.WECHAT_SUCCESS;
 				
-				if (CcbConstants.CCB_ORDER_SUCCESS.equals(orderStatus)) {
+				if (CcbConstants.ORDER_SUCCESS.equals(orderStatus)) {
 					trade_state = Constants.WECHAT_SUCCESS;
-				}else if (CcbConstants.CCB_ORDER_NOT_COMFIRMED.equals(orderStatus)||CcbConstants.CCB_ORDER_NOT_COMFIRMED2.equals(orderStatus)) {
+				}else if (CcbConstants.ORDER_NOT_COMFIRMED.equals(orderStatus)||CcbConstants.ORDER_NOT_COMFIRMED2.equals(orderStatus)) {
 					trade_state = Constants.WECHAT_PAYING;
 				}else {
 					trade_state = Constants.WECHAT_FAIL;
@@ -304,14 +315,24 @@ public class CcbImpl extends OnlinepayChannel {
 		
 		CcbReqBody<T> reqBody = new CcbReqBody<T>();
 		reqBody.setCust_id(mchInfo.getMch_id());
-		reqBody.setLanguage(CcbConstants.CCB_DEFAULT_LANGUAGE);	//写死
-		reqBody.setPassword(mchInfo.getSecret());
-		reqBody.setRequest_sn("");	//16位数字	TODO
+		reqBody.setLanguage(CcbConstants.DEFAULT_LANGUAGE);
+		reqBody.setPassword(CcbConstants.USER_PASSWD);
+		reqBody.setRequest_sn(getSnNum());	//16位数字
 		reqBody.setTx_code(requestType);
-		reqBody.setUser_id("");	//TODO 
-		
+		reqBody.setUser_id(CcbConstants.USER_ID); 
 		return reqBody;
 	
+	}
+	
+	/**
+	 * 获取sn号
+	 * @return
+	 */
+	private String getSnNum() {
+	
+		String sn = DateUtil.getSysDateTime();
+		int r = (int)(Math.random()*90+10);
+		return sn.concat(String.valueOf(r));
 	}
 
 	@Override

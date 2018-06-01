@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.eshequ.onlinepay.util;
+package com.eshequ.onlinepay.http;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -34,9 +34,9 @@ import com.eshequ.onlinepay.exception.BusinessException;
  *
  */
 @Component
-public class HttpUtil {
+public class HttpClientProxy {
 	
-	private static Logger logger = LoggerFactory.getLogger(HttpUtil.class);
+	private static Logger logger = LoggerFactory.getLogger(HttpClientProxy.class);
 
 	@Autowired
 	private CloseableHttpClient httpClient;
@@ -47,14 +47,21 @@ public class HttpUtil {
 	/**
 	 * 
 	 */
-	public HttpUtil() {
+	public HttpClientProxy() {
 		// TODO Auto-generated constructor stub
 	}
 
 	
-	public void doPost(String url, String json) {
+	public String doPost(String url, Object obj) {
 		
-		doPost(url, json, "utf-8");
+		return doPost(url, obj, Charset.defaultCharset().name());
+		
+	}
+	
+	public String doPost(String url, Object obj, String encoding) {
+		
+		HttpConfig config = new HttpConfig(encoding);
+		return doPost(url, obj, config);
 		
 	}
 	
@@ -66,7 +73,7 @@ public class HttpUtil {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public String doPost(String requestUrl, Object obj, String charset) {
+	public String doPost(String requestUrl, Object obj, HttpConfig httpConfig) {
 		
         String httpStr = "";
         HttpPost httpPost = new HttpPost(requestUrl);
@@ -76,16 +83,16 @@ public class HttpUtil {
         
 	        if (obj instanceof HashMap || obj instanceof TreeMap) {//键值形式
 	        	
-	    		httpPost.setEntity(new UrlEncodedFormEntity(assembleRequestParams((Map<String,String>)obj), Charset.forName(charset)));
+	    		httpPost.setEntity(new UrlEncodedFormEntity(assembleRequestParams((Map<String,String>)obj), Charset.forName(httpConfig.getRequestEncoding())));
 	    		
 	    	} else if(obj instanceof String) {//json形式
 	    		
 	    		if (((String) obj).startsWith("<") && (((String) obj).endsWith(">"))) {	//xml
-	    			StringEntity stringEntity = new StringEntity(obj.toString(), charset);//解决中文乱码问题
+	    			StringEntity stringEntity = new StringEntity(obj.toString(), httpConfig.getRequestEncoding());//解决中文乱码问题
         			stringEntity.setContentType("text/xml");
         			httpPost.setEntity(stringEntity);
 				}else {
-					StringEntity stringEntity = new StringEntity(obj.toString(),charset);//解决中文乱码问题
+					StringEntity stringEntity = new StringEntity(obj.toString(), httpConfig.getRequestEncoding());//解决中文乱码问题
 		             stringEntity.setContentType("application/json");
 		             httpPost.setEntity(stringEntity);
 					
@@ -98,7 +105,7 @@ public class HttpUtil {
 	    	response = httpClient.execute(httpPost);
 	        HttpEntity entity = response.getEntity();
 	        logger.info("response statusCode "+response.getStatusLine().getStatusCode());
-			httpStr = EntityUtils.toString(entity, charset);
+			httpStr = EntityUtils.toString(entity, httpConfig.getResponseEncoding());
 			
 		} catch (Exception e) {
 			

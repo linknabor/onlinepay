@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eshequ.onlinepay.exception.BusinessException;
 import com.eshequ.onlinepay.factory.PaymentFactory;
 import com.eshequ.onlinepay.web.BaseController;
 import com.eshequ.onlinepay.web.vo.Order;
@@ -130,16 +129,11 @@ public class OnlinepayController extends BaseController {
 	 * @param e
 	 * @return
 	 */
-	@ExceptionHandler(BusinessException.class)
-	public String handleException(BusinessException e){
+	@ExceptionHandler(Exception.class)
+	public String handleException(Exception e){
 		
-		logger.info("provider controller : " + e.getMessage(), e);
+		logger.info("OnlinepayController : " + e.getMessage(), e);
 		return e.getMessage();
-	}
-	
-	public static void main(String[] args) {
-		
-		
 	}
 	
 	

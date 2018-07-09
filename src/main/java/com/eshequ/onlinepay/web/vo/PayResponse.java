@@ -2,6 +2,8 @@ package com.eshequ.onlinepay.web.vo;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PayResponse implements Serializable {
 
 	/**
@@ -16,6 +18,7 @@ public class PayResponse implements Serializable {
 	private String result_code = "";	//业务返回码
 	private String err_code = "";	//错误码
 	private String err_code_des = "";	//错误描述
+	@JsonProperty("jsApiMap")
 	private JsApi jsApi;	//页面支付用集合
 	
 	public String getOut_trade_no() {

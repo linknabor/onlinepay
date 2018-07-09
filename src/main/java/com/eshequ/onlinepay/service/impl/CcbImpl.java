@@ -76,7 +76,8 @@ public class CcbImpl extends OnlinepayChannel {
 		
 		String branchId = "442000000";	//由建行统一分配	//TODO
 		String posId = "100000415";	//由建行统一分配	//TODO
-		String orderId = order.getTransactionId();	//15位商户ID + 15位自定义,对应paymentOrder中的transactionId，因为这里要求15位，而paymentOrder中的orderId是18位的，这里用不了。
+		String orderId = mch_id + order.getOrderId().substring(0, 15); 
+//				order.getTransactionId();	//15位商户ID + 15位自定义,对应paymentOrder中的transactionId，因为这里要求15位，而paymentOrder中的orderId是18位的，这里用不了。
 		String total_fee = order.getTotalFee();
 		if (StringUtils.isEmpty(total_fee)) {
 			throw new BusinessException("交易金额不能为空。");

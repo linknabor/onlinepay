@@ -142,6 +142,8 @@ public class CcbImpl extends OnlinepayChannel {
 		}else {
 			payResponse.setReturn_code(Constants.WECHAT_FAIL);
 			payResponse.setReturn_msg("获取prepay_id失败。");
+			payResponse.setErr_code(Constants.WECHAT_FAIL);
+			payResponse.setErr_code_des("获取prepay_id失败。");
 		}
 
 		return payResponse;

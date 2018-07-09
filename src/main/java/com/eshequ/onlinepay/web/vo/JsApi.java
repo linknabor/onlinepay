@@ -25,30 +25,30 @@ public class JsApi implements Serializable {
 	}
 
 	@JsonProperty("appId")
-	private String appid;
+	private String appid = "";
 	
 	@JsonProperty("timeStamp")
-	private String timestamp;
+	private String timestamp = "";
 	
 	@JsonProperty("nonceStr")
-	private String noncestr;
+	private String noncestr = "";
 	
 	@JsonProperty("package")
-	private String pack;
+	private String pack = "";
 	
 	@JsonProperty("signType")
-	private String signType;
+	private String signType = "";
 	
 	@JsonProperty("paySign")
-	private String paysign;
+	private String paysign = "";
 
 	@JsonProperty("out_trade_no")
-	private String trade_water_id;
+	private String trade_water_id = "";
 	
 	private String token_id;	//威富通用
 	
 	@JsonProperty("PAYURL")
-	private String pay_url;	//建行用
+	private String pay_url = "";	//建行用
 	
 	@JsonIgnore
 	public String getAppid() {

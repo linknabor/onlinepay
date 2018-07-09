@@ -9,13 +9,13 @@ public class PayResponse implements Serializable {
 	 */
 	private static final long serialVersionUID = -4654472860874963880L;
 	
-	private String out_trade_no;	//商户交易号
-	private String transaction_id;	//全局交易ID
-	private String return_code;	//返回码
-	private String return_msg;	//返回信息
-	private String result_code;	//业务返回码
-	private String err_code;	//错误码
-	private String err_code_des;	//错误描述
+	private String out_trade_no = "";	//商户交易号
+	private String transaction_id = "";	//全局交易ID
+	private String return_code = "";	//返回码
+	private String return_msg = "";	//返回信息
+	private String result_code = "";	//业务返回码
+	private String err_code = "";	//错误码
+	private String err_code_des = "";	//错误描述
 	private JsApi jsApi;	//页面支付用集合
 	
 	public String getOut_trade_no() {

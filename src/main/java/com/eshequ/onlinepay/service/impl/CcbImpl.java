@@ -55,6 +55,7 @@ public class CcbImpl extends OnlinepayChannel {
 	public PayResponse wechatpay(Order order) {
 		
 		Map<String, String> requestMap = createOrderRequest(order);
+		logger.info("wechatpay order : " + order.toString());
 		String requestUrl = "https://ibsbjstar.ccb.com.cn/CCBIS/ccbMain";	//TODO	Get from db;
 		String resposne = httpClientProxy.doPost(requestUrl, requestMap, CcbConstants.DEFAULT_CHARSET);
 		logger.info("response is : " + resposne);

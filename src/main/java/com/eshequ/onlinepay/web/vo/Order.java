@@ -136,7 +136,14 @@ public class Order implements Serializable{
 		this.transactionId = transactionId;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "Order [orderId=" + orderId + ", mchInfo=" + mchInfo + ", openId=" + openId + ", totalFee=" + totalFee
+				+ ", body=" + body + ", detail=" + detail + ", attach=" + attach + ", authCode=" + authCode
+				+ ", platChannel=" + platChannel + ", notifyUrl=" + notifyUrl + ", limitPay=" + limitPay
+				+ ", transactionId=" + transactionId + "]";
+	}
+
 	
 	
 }

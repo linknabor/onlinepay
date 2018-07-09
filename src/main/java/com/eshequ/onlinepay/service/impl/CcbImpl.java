@@ -60,6 +60,8 @@ public class CcbImpl extends OnlinepayChannel {
 		String resposne = httpClientProxy.doPost(requestUrl, requestMap, CcbConstants.DEFAULT_CHARSET);
 		logger.info("response is : " + resposne);
 		PayResponse payResponse = formatResponse(resposne);
+		payResponse.setOut_trade_no(order.getOrderId());
+		payResponse.getJsApi().setTrade_water_id(order.getOrderId());
 		return payResponse;
 
 	}

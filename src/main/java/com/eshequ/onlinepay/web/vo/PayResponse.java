@@ -12,6 +12,7 @@ public class PayResponse implements Serializable {
 	private static final long serialVersionUID = -4654472860874963880L;
 	
 	private String out_trade_no = "";	//商户交易号
+	private String trade_water_id = "";	//同上
 	private String transaction_id = "";	//全局交易ID
 	private String return_code = "";	//返回码
 	private String return_msg = "";	//返回信息
@@ -26,6 +27,7 @@ public class PayResponse implements Serializable {
 	}
 	public void setOut_trade_no(String out_trade_no) {
 		this.out_trade_no = out_trade_no;
+		this.trade_water_id = out_trade_no;
 	}
 	public String getTransaction_id() {
 		return transaction_id;
@@ -68,6 +70,12 @@ public class PayResponse implements Serializable {
 	}
 	public void setJsApi(JsApi jsApi) {
 		this.jsApi = jsApi;
+	}
+	public String getTrade_water_id() {
+		return trade_water_id;
+	}
+	public void setTrade_water_id(String trade_water_id) {
+		this.trade_water_id = trade_water_id;
 	}
 	
 	

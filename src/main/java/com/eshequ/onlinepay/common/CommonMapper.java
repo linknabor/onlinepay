@@ -22,6 +22,5 @@ import tk.mybatis.mapper.common.MySqlMapper;
  * @author: scott.che@beyondsoft.com
  */
 public interface CommonMapper<T> extends MySqlMapper<T>, Mapper<T> {
-	//TODO
-    //FIXME 特别注意，该接口不能被扫描到，否则会出错
+    //!!!!该接口不能被扫描到，否则启动会出错
 }

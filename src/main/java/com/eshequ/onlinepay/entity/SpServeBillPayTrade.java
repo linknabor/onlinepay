@@ -1,4 +1,4 @@
-package com.eshequ.onlinepay.model;
+package com.eshequ.onlinepay.entity;
 
 import java.math.BigDecimal;
 

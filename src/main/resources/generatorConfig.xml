@@ -24,7 +24,7 @@
 		           scale>0;length>18：使用BigDecimal;
 		           scale=0;length[10,18]：使用Long；
 		           scale=0;length[5,9]：使用Integer；
-		           scale=0;length<5：使用Short；
+		           scale=0;length<5：使用Short；  
 		    -->
 		    <property name="forceBigDecimals" value="true"/>
 		</javaTypeResolver>		
@@ -35,8 +35,8 @@
  77         targetProject：目标项目，指定一个存在的目录下，生成的内容会放到指定目录中，如果目录不存在，MBG不会自动建目录
  78      -->
 		<!-- model -->
-		<javaModelGenerator targetPackage="com.eshequ.onlinepay.model"
-			targetProject="rollingservice" />
+		<javaModelGenerator targetPackage="com.eshequ.onlinepay.entity" 
+			targetProject=".\src\main\java\" />
 		
 		
 		<!-- 生成SQL map的XML文件生成器，
@@ -45,15 +45,21 @@
 	      	这个元素就必须配置
 			targetPackage/targetProject:同javaModelGenerator
 	      -->
-	     <sqlMapGenerator targetPackage="resources" targetProject="rollingservice">
+	     <sqlMapGenerator targetPackage="resources.mapper" targetProject=".\src\main\">
 	         <!-- 在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false -->
 	         <property name="enableSubPackages" value="false"/>
      	</sqlMapGenerator>
      	
      	<javaClientGenerator targetPackage="com.eshequ.onlinepay.mapper"
-			targetProject="rollingservice" type="XMLMAPPER" />
+			targetProject=".\src\main\java\" type="XMLMAPPER" />
      	
-		<table schema="servplat" tableName="sp_serve_bill_pay_trade" enableCountByExample="false"
+		<!-- <table schema="servplat" tableName="sp_serve_bill_pay_trade" enableCountByExample="false"
+			enableUpdateByExample="false" enableDeleteByExample="false"
+			enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false"/>	
+		</table> -->
+		
+		<table schema="servplat" tableName="sp_base_csp" enableCountByExample="false"
 			enableUpdateByExample="false" enableDeleteByExample="false"
 			enableSelectByExample="false" selectByExampleQueryId="false">
 			

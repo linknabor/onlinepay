@@ -10,11 +10,11 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan("com.eshequ.onlinepay")
 @MapperScan(basePackages="com.eshequ.onlinepay.mapper")
-public class Application {
+public class AppConfig {
 	
 	public static void main(String[] args) {
 		
-		SpringApplication.run(Application.class, args);
+		SpringApplication.run(AppConfig.class, args);
 		
 	}
 	

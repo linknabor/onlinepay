@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eshequ.onlinepay.mapper.SpBaseCspMapper">
+  <resultMap id="BaseResultMap" type="com.eshequ.onlinepay.entity.SpBaseCsp">
+    <id column="CSP_ID" jdbcType="BIGINT" property="cspId" />
+    <result column="CSP_STATUS" jdbcType="CHAR" property="cspStatus" />
+    <result column="LOGIN_NAME" jdbcType="VARCHAR" property="loginName" />
+    <result column="CSP_NAME" jdbcType="VARCHAR" property="cspName" />
+    <result column="EMAIL" jdbcType="VARCHAR" property="email" />
+    <result column="LINK_MAN" jdbcType="VARCHAR" property="linkMan" />
+    <result column="ORG_TEL" jdbcType="VARCHAR" property="orgTel" />
+    <result column="ORG_ADDR" jdbcType="VARCHAR" property="orgAddr" />
+    <result column="POST_CODE" jdbcType="VARCHAR" property="postCode" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="PRODUCT_VERSION" jdbcType="CHAR" property="productVersion" />
+    <result column="USER_NUM" jdbcType="DECIMAL" property="userNum" />
+    <result column="SECT_NUM" jdbcType="DECIMAL" property="sectNum" />
+    <result column="START_DATE" jdbcType="CHAR" property="startDate" />
+    <result column="BACK_TE_NAME" jdbcType="VARCHAR" property="backTeName" />
+    <result column="REG_CSP_ID" jdbcType="BIGINT" property="regCspId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    CSP_ID, CSP_STATUS, LOGIN_NAME, CSP_NAME, EMAIL, LINK_MAN, ORG_TEL, ORG_ADDR, POST_CODE, 
+    REMARK, PRODUCT_VERSION, USER_NUM, SECT_NUM, START_DATE, BACK_TE_NAME, REG_CSP_ID
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sp_base_csp
+    where CSP_ID = #{cspId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from sp_base_csp
+    where CSP_ID = #{cspId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.eshequ.onlinepay.entity.SpBaseCsp">
+    insert into sp_base_csp (CSP_ID, CSP_STATUS, LOGIN_NAME, 
+      CSP_NAME, EMAIL, LINK_MAN, 
+      ORG_TEL, ORG_ADDR, POST_CODE, 
+      REMARK, PRODUCT_VERSION, USER_NUM, 
+      SECT_NUM, START_DATE, BACK_TE_NAME, 
+      REG_CSP_ID)
+    values (#{cspId,jdbcType=BIGINT}, #{cspStatus,jdbcType=CHAR}, #{loginName,jdbcType=VARCHAR}, 
+      #{cspName,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{linkMan,jdbcType=VARCHAR}, 
+      #{orgTel,jdbcType=VARCHAR}, #{orgAddr,jdbcType=VARCHAR}, #{postCode,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{productVersion,jdbcType=CHAR}, #{userNum,jdbcType=DECIMAL}, 
+      #{sectNum,jdbcType=DECIMAL}, #{startDate,jdbcType=CHAR}, #{backTeName,jdbcType=VARCHAR}, 
+      #{regCspId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.eshequ.onlinepay.entity.SpBaseCsp">
+    insert into sp_base_csp
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="cspId != null">
+        CSP_ID,
+      </if>
+      <if test="cspStatus != null">
+        CSP_STATUS,
+      </if>
+      <if test="loginName != null">
+        LOGIN_NAME,
+      </if>
+      <if test="cspName != null">
+        CSP_NAME,
+      </if>
+      <if test="email != null">
+        EMAIL,
+      </if>
+      <if test="linkMan != null">
+        LINK_MAN,
+      </if>
+      <if test="orgTel != null">
+        ORG_TEL,
+      </if>
+      <if test="orgAddr != null">
+        ORG_ADDR,
+      </if>
+      <if test="postCode != null">
+        POST_CODE,
+      </if>
+      <if test="remark != null">
+        REMARK,
+      </if>
+      <if test="productVersion != null">
+        PRODUCT_VERSION,
+      </if>
+      <if test="userNum != null">
+        USER_NUM,
+      </if>
+      <if test="sectNum != null">
+        SECT_NUM,
+      </if>
+      <if test="startDate != null">
+        START_DATE,
+      </if>
+      <if test="backTeName != null">
+        BACK_TE_NAME,
+      </if>
+      <if test="regCspId != null">
+        REG_CSP_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="cspId != null">
+        #{cspId,jdbcType=BIGINT},
+      </if>
+      <if test="cspStatus != null">
+        #{cspStatus,jdbcType=CHAR},
+      </if>
+      <if test="loginName != null">
+        #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="cspName != null">
+        #{cspName,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="linkMan != null">
+        #{linkMan,jdbcType=VARCHAR},
+      </if>
+      <if test="orgTel != null">
+        #{orgTel,jdbcType=VARCHAR},
+      </if>
+      <if test="orgAddr != null">
+        #{orgAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="postCode != null">
+        #{postCode,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="productVersion != null">
+        #{productVersion,jdbcType=CHAR},
+      </if>
+      <if test="userNum != null">
+        #{userNum,jdbcType=DECIMAL},
+      </if>
+      <if test="sectNum != null">
+        #{sectNum,jdbcType=DECIMAL},
+      </if>
+      <if test="startDate != null">
+        #{startDate,jdbcType=CHAR},
+      </if>
+      <if test="backTeName != null">
+        #{backTeName,jdbcType=VARCHAR},
+      </if>
+      <if test="regCspId != null">
+        #{regCspId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.eshequ.onlinepay.entity.SpBaseCsp">
+    update sp_base_csp
+    <set>
+      <if test="cspStatus != null">
+        CSP_STATUS = #{cspStatus,jdbcType=CHAR},
+      </if>
+      <if test="loginName != null">
+        LOGIN_NAME = #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="cspName != null">
+        CSP_NAME = #{cspName,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        EMAIL = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="linkMan != null">
+        LINK_MAN = #{linkMan,jdbcType=VARCHAR},
+      </if>
+      <if test="orgTel != null">
+        ORG_TEL = #{orgTel,jdbcType=VARCHAR},
+      </if>
+      <if test="orgAddr != null">
+        ORG_ADDR = #{orgAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="postCode != null">
+        POST_CODE = #{postCode,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="productVersion != null">
+        PRODUCT_VERSION = #{productVersion,jdbcType=CHAR},
+      </if>
+      <if test="userNum != null">
+        USER_NUM = #{userNum,jdbcType=DECIMAL},
+      </if>
+      <if test="sectNum != null">
+        SECT_NUM = #{sectNum,jdbcType=DECIMAL},
+      </if>
+      <if test="startDate != null">
+        START_DATE = #{startDate,jdbcType=CHAR},
+      </if>
+      <if test="backTeName != null">
+        BACK_TE_NAME = #{backTeName,jdbcType=VARCHAR},
+      </if>
+      <if test="regCspId != null">
+        REG_CSP_ID = #{regCspId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where CSP_ID = #{cspId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.eshequ.onlinepay.entity.SpBaseCsp">
+    update sp_base_csp
+    set CSP_STATUS = #{cspStatus,jdbcType=CHAR},
+      LOGIN_NAME = #{loginName,jdbcType=VARCHAR},
+      CSP_NAME = #{cspName,jdbcType=VARCHAR},
+      EMAIL = #{email,jdbcType=VARCHAR},
+      LINK_MAN = #{linkMan,jdbcType=VARCHAR},
+      ORG_TEL = #{orgTel,jdbcType=VARCHAR},
+      ORG_ADDR = #{orgAddr,jdbcType=VARCHAR},
+      POST_CODE = #{postCode,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      PRODUCT_VERSION = #{productVersion,jdbcType=CHAR},
+      USER_NUM = #{userNum,jdbcType=DECIMAL},
+      SECT_NUM = #{sectNum,jdbcType=DECIMAL},
+      START_DATE = #{startDate,jdbcType=CHAR},
+      BACK_TE_NAME = #{backTeName,jdbcType=VARCHAR},
+      REG_CSP_ID = #{regCspId,jdbcType=BIGINT}
+    where CSP_ID = #{cspId,jdbcType=BIGINT}
+  </update>
+</mapper>

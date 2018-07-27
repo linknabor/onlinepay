@@ -1,4 +1,4 @@
-package com.eshequ.onlinepay.entity;
+package com.eshequ.onlinepay.model;
 
 import java.math.BigDecimal;
 
@@ -172,4 +172,16 @@ public class SpServeBillPayTrade {
     public void setStaffName(String staffName) {
         this.staffName = staffName;
     }
+
+	@Override
+	public String toString() {
+		return "SpServeBillPayTrade [tradeWaterId=" + tradeWaterId + ", mergerStatus=" + mergerStatus + ", payMethod="
+				+ payMethod + ", tranDate=" + tranDate + ", tranTime=" + tranTime + ", needInvoice=" + needInvoice
+				+ ", invoiceTitle=" + invoiceTitle + ", webUserId=" + webUserId + ", signature=" + signature
+				+ ", tranAmt=" + tranAmt + ", cspId=" + cspId + ", sectId=" + sectId + ", fromSys=" + fromSys
+				+ ", platChannel=" + platChannel + ", payScenarios=" + payScenarios + ", cspStaffId=" + cspStaffId
+				+ ", staffName=" + staffName + "]";
+	}
+    
+    
 }

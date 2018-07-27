@@ -2,12 +2,13 @@ package com.eshequ.onlinepay.service.impl;
 
 import org.springframework.stereotype.Service;
 
-import com.eshequ.onlinepay.service.OnlinepayChannel;
+import com.eshequ.onlinepay.service.OnlinepayService;
 import com.eshequ.onlinepay.web.vo.Order;
 import com.eshequ.onlinepay.web.vo.PayResponse;
+import com.eshequ.onlinepay.web.vo.QueryResponse;
 
 @Service
-public class SandImpl extends OnlinepayChannel {
+public class SandImpl implements OnlinepayService {
 
 	@Override
 	public PayResponse wechatpay(Order order) {
@@ -22,7 +23,8 @@ public class SandImpl extends OnlinepayChannel {
 	}
 
 	@Override
-	public void query(Order order) {
+	public QueryResponse query(Order order) {
+		return null;
 		// TODO Auto-generated method stub
 		
 	}

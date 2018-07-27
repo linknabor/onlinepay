@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.eshequ.onlinepay.mapper.SpBaseCspMapper">
-  <resultMap id="BaseResultMap" type="com.eshequ.onlinepay.entity.SpBaseCsp">
+  <resultMap id="BaseResultMap" type="com.eshequ.onlinepay.model.SpBaseCsp">
     <id column="CSP_ID" jdbcType="BIGINT" property="cspId" />
     <result column="CSP_STATUS" jdbcType="CHAR" property="cspStatus" />
     <result column="LOGIN_NAME" jdbcType="VARCHAR" property="loginName" />

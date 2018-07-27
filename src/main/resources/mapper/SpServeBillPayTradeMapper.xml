@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.eshequ.onlinepay.mapper.SpServeBillPayTradeMapper">
-  <resultMap id="BaseResultMap" type="com.eshequ.onlinepay.entity.SpServeBillPayTrade">
+  <resultMap id="BaseResultMap" type="com.eshequ.onlinepay.model.SpServeBillPayTrade">
     <id column="TRADE_WATER_ID" jdbcType="BIGINT" property="tradeWaterId" />
     <result column="MERGER_STATUS" jdbcType="CHAR" property="mergerStatus" />
     <result column="PAY_METHOD" jdbcType="CHAR" property="payMethod" />
@@ -21,4 +21,9 @@
     <result column="staff_name" jdbcType="VARCHAR" property="staffName" />
   </resultMap>
   
+	<select id="getBillTradeByCsp" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select t.* from sp_serve_bill_pay_trade t join sp_base_csp c on t.csp_id = c.csp_id
+		where t.csp_id = #{csp_id}
+	</select>
+
 </mapper>

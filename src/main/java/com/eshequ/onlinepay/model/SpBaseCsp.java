@@ -1,8 +1,11 @@
-package com.eshequ.onlinepay.entity;
+package com.eshequ.onlinepay.model;
 
 import java.math.BigDecimal;
 
+import javax.persistence.Id;
+
 public class SpBaseCsp {
+	@Id
     private Long cspId;
 
     private String cspStatus;

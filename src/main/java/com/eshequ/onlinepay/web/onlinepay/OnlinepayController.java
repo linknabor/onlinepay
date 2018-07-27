@@ -47,7 +47,7 @@ public class OnlinepayController extends BaseController {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);	//设置map中多余的字段不转换到实体
 		Order order = mapper.readValue(requestJsonStr, Order.class);	//map中的字段比实体多。Order实体只参与支付，其余数据的记录用map中的数据
 
-		PayResponse payResponse = paymentFactory.getOnlinepayInstance(order.getPlatChannel()).wechatpay(order);
+		PayResponse payResponse = paymentFactory.getOnlinepayService(order.getPlatChannel()).wechatpay(order);
 		return mapper.writeValueAsString(payResponse);
         
     }
@@ -80,7 +80,7 @@ public class OnlinepayController extends BaseController {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);	//设置map中多余的字段不转换到实体
 		Order order = mapper.readValue(requestJsonStr, Order.class);	//map中的字段比实体多。Order实体只参与支付，其余数据的记录用map中的数据
 
-		paymentFactory.getOnlinepayInstance(order.getPlatChannel()).query(order);
+		paymentFactory.getOnlinepayService(order.getPlatChannel()).query(order);
 		return null;
         
     }

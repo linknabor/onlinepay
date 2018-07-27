@@ -22,7 +22,7 @@ import com.eshequ.onlinepay.exception.AppSysException;
 import com.eshequ.onlinepay.exception.BusinessException;
 import com.eshequ.onlinepay.http.HttpClientProxy;
 import com.eshequ.onlinepay.http.HttpConfig;
-import com.eshequ.onlinepay.service.OnlinepayChannel;
+import com.eshequ.onlinepay.service.OnlinepayService;
 import com.eshequ.onlinepay.service.vo.ccb.CcbPayQueryResponse;
 import com.eshequ.onlinepay.service.vo.ccb.CcbReqBody;
 import com.eshequ.onlinepay.service.vo.ccb.CcbRequest;
@@ -37,16 +37,17 @@ import com.eshequ.onlinepay.web.vo.JsApi;
 import com.eshequ.onlinepay.web.vo.MchInfo;
 import com.eshequ.onlinepay.web.vo.Order;
 import com.eshequ.onlinepay.web.vo.PayResponse;
+import com.eshequ.onlinepay.web.vo.QueryResponse;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-@Service
-public class CcbImpl extends OnlinepayChannel {
+@Service("CcbImpl")
+public class CcbImpl implements OnlinepayService {
 	
-	private static Logger logger = LoggerFactory.getLogger(OnlinepayChannel.class);
+	private static Logger logger = LoggerFactory.getLogger(CcbImpl.class);
 	
 	@Autowired
 	private HttpClientProxy httpClientProxy;
@@ -187,7 +188,7 @@ public class CcbImpl extends OnlinepayChannel {
 	}
 
 	@Override
-	public void query(Order order) {
+	public QueryResponse query(Order order) {
 		
 		String transactionId = order.getTransactionId();	//交易号
 		MchInfo mchInfo = order.getMchInfo();	//商户信息
@@ -203,6 +204,9 @@ public class CcbImpl extends OnlinepayChannel {
 		String response = httpClientProxy.doPost(requestUrl, requestMap, httpConfig);
 		System.out.println(response);
 		CcbPayQueryResponse ccbPayQueryResponse = formatQueryResponse(response);
+		
+		QueryResponse queryResponse = new QueryResponse();
+		return queryResponse;
 		
 	}
 
